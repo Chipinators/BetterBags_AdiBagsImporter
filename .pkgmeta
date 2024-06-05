@@ -1,0 +1,5 @@
+required-dependencies:
+	- better-bags
+
+optional-dependencies:
+	- adibags

@@ -1,0 +1,15 @@
+## Interface: 90002
+## Title: BetterBags - AdiBags Importer
+## Notes: Imports AdiBags manual filters into BetterBags
+## Author: Chipinators
+## Version: @project-version@
+## X-Date: @project-date-iso@
+## X-License: MIT
+## X-Curse-Project-ID: 1031443
+## Dependencies: BetterBags
+## OptionalDeps: AdiBags
+
+# Locale
+locale\enUs.lua
+
+BetterBags_AdiBagsImporter.lua
