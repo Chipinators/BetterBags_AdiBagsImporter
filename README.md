@@ -29,3 +29,9 @@ _Note: I have only tested this in Retail, may or may not work for other versions
   <br>
   <i>Example import using only Sub-Categories</i>
 </p>
+
+<p align="center">
+  <span><img src="https://github.com/Chipinators/BetterBags_AdiBagsImporter/assets/8713565/6e26b409-9eba-4aba-8ca5-e1ffb22abc02"></span>
+  <br>
+  <i>AdiBags installed but not enabled</i>
+</p>
