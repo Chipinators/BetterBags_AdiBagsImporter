@@ -1,4 +1,5 @@
-## Interface: 90002
+## Interface: 100207,110000
+
 ## Title: BetterBags - AdiBags Importer
 ## Notes: Imports AdiBags manual filters into BetterBags
 ## Author: Chipinators
