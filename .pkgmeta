@@ -1,3 +1,5 @@
+package-as: BetterBags-AdiBags-Importer
+
 required-dependencies:
 	- better-bags
 
