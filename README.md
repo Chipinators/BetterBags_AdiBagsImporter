@@ -8,6 +8,7 @@ Import not look exactly how you thought it would? Undo and try again!
 _Note: I have only tested this in Retail, may or may not work for other versions of the game._
 
 ## Download
+* [Wago Addons](https://addons.wago.io/addons/betterbags-adibags-importer/versions?stability=stable)
 * [CurseForge](https://www.curseforge.com/wow/addons/betterbags-adibags-importer)
 
 ## Screenshots
