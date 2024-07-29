@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-fields
 ---@class BetterBags: AceAddon
 local BetterBags = LibStub('AceAddon-3.0'):GetAddon("BetterBags")
 assert(BetterBags, "BetterBags_AdiBagsImporter requires BetterBags")
@@ -24,6 +25,9 @@ local importedItems = {}
 local createdCategories = {}
 local categorySeparator = " - "
 local useSubcategoryOnly = false
+local selectedProfile = "Default"
+local adiBagsHasOverrides = false
+local availableProfiles = {}
 
 -- Check if AdiBags is installed and loaded
 local adiBagsInstalled = false
@@ -37,6 +41,15 @@ for i = 1, GetNumAddOns() do
     end
 end
 local adiBagsDetected = adiBagsInstalled and IsAddOnLoaded("AdiBags") and AdiBagsDB and AdiBagsDB.namespaces and AdiBagsDB.namespaces.FilterOverride
+
+-- Function to get profile names
+local function getProfileNames()
+    local profiles = {}
+    for profile in pairs(AdiBagsDB.namespaces.FilterOverride.profiles) do
+        profiles[profile] = profile
+    end
+    return profiles
+end
 
 -- Function to format category name
 local function formatCategoryName(category)
@@ -55,8 +68,13 @@ function addon:ImportAdiBagsFilters()
         return
     end
 
-    -- Read AdiBags filters
-    local adiBagsFilters = AdiBagsDB.namespaces.FilterOverride.profiles.Default.overrides
+    -- Read AdiBags filters from the selected profile
+    local profileData = AdiBagsDB.namespaces.FilterOverride.profiles[selectedProfile]
+    if not profileData or not profileData.overrides then
+        print(L:G("Selected profile does not have any overrides!"))
+        return
+    end
+    local adiBagsFilters = profileData.overrides
 
     -- Create a set to store unique "Category#Sub-Category" strings
     local uniqueCategories = {}
@@ -91,6 +109,12 @@ function addon:ImportAdiBagsFilters()
     events:SendMessage('bags/FullRefreshAll')
 end
 
+-- Function to check if the selected profile has overrides
+local function checkProfileOverrides(profile)
+    local profileData = AdiBagsDB.namespaces.FilterOverride.profiles[profile]
+    adiBagsHasOverrides = profileData and profileData.overrides and next(profileData.overrides) ~= nil
+end
+
 -- Function to undo the import
 function addon:UndoImport()
     if not importRun then
@@ -121,6 +145,18 @@ function addon:EnableAdiBags()
     ReloadUI()
 end
 
+
+-- Set default profile to the character's current profile
+if adiBagsDetected and AdiBagsDB.profileKeys then
+    local currentCharacter = UnitName("player") .. " - " .. GetRealmName()
+    selectedProfile = AdiBagsDB.profileKeys[currentCharacter] or "Default"
+
+    -- Get available profiles
+    availableProfiles = getProfileNames()
+    checkProfileOverrides(selectedProfile)
+end
+
+
 ---@type AceConfig.OptionsTable
 local adiBagsImporterConfigOptions = {
     warning = {
@@ -139,7 +175,7 @@ local adiBagsImporterConfigOptions = {
                 type = "execute",
                 name = L:G("Enable AdiBags"),
                 order = 2,
-                hidden = function() return not adiBagsInstalled or adiBagsEnabled end,
+                hidden = function() return not adiBagsInstalled and not adiBagsEnabled end,
                 func = function() addon:EnableAdiBags() end,
             },
         }
@@ -149,51 +185,89 @@ local adiBagsImporterConfigOptions = {
         type = "group",
         order = 1,
         inline = true,
+        hidden = function() return not adiBagsInstalled or not adiBagsEnabled end,
         args = {
             description = {
                 type = "description",
                 name = L:G("Import your AdiBags custom filters into BetterBags"),
+                order = 0,
+                hidden = function() return not adiBagsDetected end,
+            },
+            profileGroup = {
+                name = "",
+                type = "group",
                 order = 1,
                 hidden = function() return not adiBagsDetected end,
+                args = {
+                    profileSelect = {
+                        type = "select",
+                        name = L:G("Select Profile"),
+                        desc = L:G("Select the AdiBags profile to import."),
+                        order = 0,
+                        values = availableProfiles,
+                        get = function() return selectedProfile end,
+                        set = function(_, value)
+                            selectedProfile = value
+                            checkProfileOverrides(value)
+                        end,
+                        disabled = function() return not adiBagsDetected end,
+                        hidden = function() return not adiBagsDetected end,
+                    },
+                    errorDescription = {
+                        type = "description",
+                        name = L:G("Error: Selected profile does not have any overrides!"),
+                        order = 1,
+                        hidden = function() return adiBagsHasOverrides end,
+                        fontSize = "medium",
+                    },
+                },
             },
-            separator = {
-                type = "input",
-                name = L:G("Category Separator"),
-                desc = L:G("Enter the separator to use between Category and Sub-Category"),
+            category = {
+                name = "",
+                type = "group",
+                inline = true,
                 order = 2,
-                get = function() return categorySeparator end,
-                set = function(_, value) categorySeparator = value end,
-                disabled = function() return useSubcategoryOnly or not adiBagsDetected end,
-                hidden = function() return not adiBagsDetected end,
-            },
-            useSubcategoryOnly = {
-                type = "toggle",
-                name = L:G("Use Sub-Category Only"),
-                desc = L:G("If enabled, only the Sub-Category will be used for the category name"),
-                order = 3,
-                get = function() return useSubcategoryOnly end,
-                set = function(_, value) useSubcategoryOnly = value end,
-                disabled = function() return not adiBagsDetected end,
-                hidden = function() return not adiBagsDetected end,
+                args = {
+                    separator = {
+                        type = "input",
+                        name = L:G("Category Separator"),
+                        desc = L:G("Enter the separator to use between Category and Sub-Category"),
+                        order = 0,
+                        get = function() return categorySeparator end,
+                        set = function(_, value) categorySeparator = value end,
+                        disabled = function() return useSubcategoryOnly or not adiBagsDetected end,
+                        hidden = function() return not adiBagsDetected end,
+                    },
+                    useSubcategoryOnly = {
+                        type = "toggle",
+                        name = L:G("Use Sub-Category Only"),
+                        desc = L:G("If enabled, only the Sub-Category will be used for the category name"),
+                        order = 1,
+                        get = function() return useSubcategoryOnly end,
+                        set = function(_, value) useSubcategoryOnly = value end,
+                        disabled = function() return not adiBagsDetected end,
+                        hidden = function() return not adiBagsDetected end,
+                    },
+                },
             },
             buttons = {
                 name = "",
                 type = "group",
                 inline = true,
-                order = 4,
+                order = 3,
                 hidden = function() return not adiBagsDetected end,
                 args = {
                     import = {
                         type = "execute",
                         name = L:G("Import"),
-                        order = 1,
-                        disabled = function() return not adiBagsDetected end,
+                        order = 0,
+                        disabled = function() return not adiBagsDetected or not adiBagsHasOverrides end,
                         func = function() addon:ImportAdiBagsFilters() end,
                     },
                     undo = {
                         type = "execute",
                         name = L:G("Undo"),
-                        order = 2,
+                        order = 1,
                         disabled = function() return not importRun or not adiBagsDetected end,
                         func = function() addon:UndoImport() end,
                     },
