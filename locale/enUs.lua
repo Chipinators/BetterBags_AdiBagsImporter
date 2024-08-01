@@ -27,12 +27,21 @@ if L then
         ["Undo successful. Reverted imported items and categories."] = "Undo successful. Reverted imported items and categories.",
     }
 
+    -- Errors
+    local errors = {
+        ["AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped."] = "AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped.",
+    }
+
     -- Register Strings
     for key, value in pairs(generalStrings) do
         L:S(key, value)
     end
 
     for key, value in pairs(descriptions) do
+        L:S(key, value)
+    end
+
+    for key, value in pairs(errors) do
         L:S(key, value)
     end
 end

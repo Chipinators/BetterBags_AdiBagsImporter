@@ -92,21 +92,27 @@ function addon:ImportAdiBagsFilters()
 
     -- Migrate categories and items to BetterBags
     for itemId, category in pairs(adiBagsFilters) do
-        local formattedCategory = formatCategoryName(category)
-        -- Check if the category already exists in BetterBags
-        if not categories:DoesCategoryExist(formattedCategory) then
-            categories:CreatePersistentCategory(formattedCategory)
-            createdCategories[formattedCategory] = true
-        end
-        -- Add item to the category
-        categories:AddItemToPersistentCategory(itemId, formattedCategory)
-        -- Track imported items
-        importedItems[itemId] = formattedCategory
-    end
 
-    importRun = true
-    print(format(L:G("Successfully imported %d AdiBags categories into BetterBags."), uniqueCategoryCount))
-    events:SendMessage('bags/FullRefreshAll')
+        -- Check if the item exists
+        local itemInfo = C_Item.GetItemInfoInstant(itemId)
+        if itemInfo then
+            local formattedCategory = formatCategoryName(category)
+
+            -- Check if the category already exists in BetterBags
+            if not categories:DoesCategoryExist(formattedCategory) then
+                categories:CreatePersistentCategory(formattedCategory)
+                createdCategories[formattedCategory] = true
+            end
+
+            -- Add item to the category
+            categories:AddItemToPersistentCategory(itemId, formattedCategory)
+
+            -- Track imported items
+            importedItems[itemId] = formattedCategory
+        else
+            print(format(L:G("AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped."), itemId))
+        end
+    end
 end
 
 -- Function to check if the selected profile has overrides
