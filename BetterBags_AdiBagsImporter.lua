@@ -113,6 +113,10 @@ function addon:ImportAdiBagsFilters()
             print(format(L:G("AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped."), itemId))
         end
     end
+    
+    importRun = true
+    print(format(L:G("Successfully imported %d AdiBags categories into BetterBags."), uniqueCategoryCount))
+    events:SendMessage('bags/FullRefreshAll')
 end
 
 -- Function to check if the selected profile has overrides
