@@ -76,48 +76,45 @@ function addon:ImportAdiBagsFilters()
     end
     local adiBagsFilters = profileData.overrides
 
-    -- Create a set to store unique "Category#Sub-Category" strings
-    local uniqueCategories = {}
+    -- Create a table to store the categories and their corresponding items
+    local categoriesToCreate = {}
 
-    for _, category in pairs(adiBagsFilters) do
-        local formattedCategory = formatCategoryName(category)
-        uniqueCategories[formattedCategory] = true
-    end
-
-    -- Count the number of unique categories
-    local uniqueCategoryCount = 0
-    for _ in pairs(uniqueCategories) do
-        uniqueCategoryCount = uniqueCategoryCount + 1
-    end
-
-    -- Migrate categories and items to BetterBags
+    -- Populate the categories and filter out invalid items
     for itemId, category in pairs(adiBagsFilters) do
-
         -- Check if the item exists
         local itemInfo = C_Item.GetItemInfoInstant(itemId)
         if itemInfo then
             local formattedCategory = formatCategoryName(category)
-
-            -- Check if the category already exists in BetterBags
-            if not categories:DoesCategoryExist(formattedCategory) then
-                categories:CreatePersistentCategory(formattedCategory)
-                createdCategories[formattedCategory] = true
+            
+            -- Initialize the category if it doesn't exist in the table
+            if not categoriesToCreate[formattedCategory] then
+                categoriesToCreate[formattedCategory] = {}
             end
-
-            -- Add item to the category
-            categories:AddItemToPersistentCategory(itemId, formattedCategory)
-
-            -- Track imported items
-            importedItems[itemId] = formattedCategory
+            
+            -- Add the item to the category
+            categoriesToCreate[formattedCategory][itemId] = true
         else
             print(format(L:G("AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped."), itemId))
         end
     end
-    
+
+    -- Create the categories with the valid items
+    local categoryCount = 0
+    for categoryName, itemList in pairs(categoriesToCreate) do
+        categories:CreateCategory({
+            name = categoryName,
+            itemList = itemList,
+            save = true
+        })
+        createdCategories[categoryName] = true
+        categoryCount = categoryCount + 1
+    end
+
     importRun = true
-    print(format(L:G("Successfully imported %d AdiBags categories into BetterBags."), uniqueCategoryCount))
+    print(format(L:G("Successfully imported %d AdiBags categories into BetterBags."), categoryCount))
     events:SendMessage('bags/FullRefreshAll')
 end
+
 
 -- Function to check if the selected profile has overrides
 local function checkProfileOverrides(profile)
