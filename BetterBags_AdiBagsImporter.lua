@@ -32,15 +32,15 @@ local availableProfiles = {}
 -- Check if AdiBags is installed and loaded
 local adiBagsInstalled = false
 local adiBagsEnabled = false
-for i = 1, GetNumAddOns() do
-    local name, _, _, enabled = GetAddOnInfo(i)
+for i = 1, C_AddOns.GetNumAddOns() do
+    local name, _, _, enabled = C_AddOns.GetAddOnInfo(i)
     if name == "AdiBags" then
         adiBagsInstalled = true
         adiBagsEnabled = enabled
         break
     end
 end
-local adiBagsDetected = adiBagsInstalled and IsAddOnLoaded("AdiBags") and AdiBagsDB and AdiBagsDB.namespaces and AdiBagsDB.namespaces.FilterOverride
+local adiBagsDetected = adiBagsInstalled and C_AddOns.IsAddOnLoaded("AdiBags") and AdiBagsDB and AdiBagsDB.namespaces and AdiBagsDB.namespaces.FilterOverride
 
 -- Function to get profile names
 local function getProfileNames()
