@@ -12,6 +12,13 @@ if L then
         ["Enable AdiBags"] = "Enable AdiBags",
         ["Import"] = "Import",
         ["Undo"] = "Undo",
+        ["About"] = "About",
+        ["Version"] = "Version",
+        ["Date"] = "Date",
+        ["Developer"] = "Developer",
+        ["Support"] = "Support",
+        ["GitHub"] = "GitHub",
+        ["Check Out My Other BetterBags Plugins"] = "Check Out My Other BetterBags Plugins",
     }
 
     -- Descriptions
@@ -25,10 +32,12 @@ if L then
         ["Successfully imported %d AdiBags categories into BetterBags."] = "Successfully imported %d AdiBags categories into BetterBags.",
         ["No import to undo."] = "No import to undo.",
         ["Undo successful. Reverted imported items and categories."] = "Undo successful. Reverted imported items and categories.",
+        ["If you find any issues with the plugin, please submit an issue on the projects GitHub page."] = "If you find any issues with the plugin, please submit an issue on the projects GitHub page.",
     }
 
     -- Errors
     local errors = {
+        ["Error: Selected profile does not have any overrides!"] = "Error: Selected profile does not have any overrides!",
         ["AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped."] = "AdiBags Importer Warning: Attempted to import item '%d' but the item does not exist. Item import was skipped.",
     }
 

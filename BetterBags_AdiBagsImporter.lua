@@ -1,3 +1,6 @@
+local VERSION_INFO = "1.0.6";
+local VERSION_DATE = 1723900152;
+
 ---@diagnostic disable: missing-fields
 ---@class BetterBags: AceAddon
 local BetterBags = LibStub('AceAddon-3.0'):GetAddon("BetterBags")
@@ -104,7 +107,9 @@ function addon:ImportAdiBagsFilters()
         categories:CreateCategory({
             name = categoryName,
             itemList = itemList,
-            save = true
+            save = true,
+            dynamic = false,
+            note = "Imported from AdiBags"
         })
         createdCategories[categoryName] = true
         categoryCount = categoryCount + 1
@@ -164,6 +169,14 @@ if adiBagsDetected and AdiBagsDB.profileKeys then
 end
 
 
+local function GetAboutText()
+    local version = L:G("Version")..": "..VERSION_INFO
+    local date = L:G("Released")..": "..date("%m/%d/%y", VERSION_DATE)
+    local developer = L:G("Developer")..": ".."Chipinators"
+
+    return version.."\n\n"..date.."\n\n"..developer
+end
+
 ---@type AceConfig.OptionsTable
 local adiBagsImporterConfigOptions = {
     warning = {
@@ -175,6 +188,7 @@ local adiBagsImporterConfigOptions = {
         args = {
             description = {
                 type = "description",
+                fontSize = "medium",
                 name = adiBagsInstalled and L:G("AdiBags is installed but disabled. Please enable it and reload the UI.") or L:G("AdiBags not detected! The functionality of this module will be disabled."),
                 order = 1,
             },
@@ -196,6 +210,7 @@ local adiBagsImporterConfigOptions = {
         args = {
             description = {
                 type = "description",
+                fontSize = "medium",
                 name = L:G("Import your AdiBags custom filters into BetterBags"),
                 order = 0,
                 hidden = function() return not adiBagsDetected end,
@@ -222,10 +237,10 @@ local adiBagsImporterConfigOptions = {
                     },
                     errorDescription = {
                         type = "description",
-                        name = L:G("Error: Selected profile does not have any overrides!"),
+                        fontSize = "medium",
+                        name = "|cffd11717"..L:G("Error: Selected profile does not have any overrides!").."|r",
                         order = 1,
                         hidden = function() return adiBagsHasOverrides end,
-                        fontSize = "medium",
                     },
                 },
             },
@@ -281,6 +296,66 @@ local adiBagsImporterConfigOptions = {
                 },
             },
         },
+    },
+    about = {
+        name = L:G("About"),
+        type = "group",
+        order = 0,
+        inline = false,
+        args = {
+            current = {
+                name = L:G("About"),
+                type = "group",
+                order = 0,
+                inline = true,
+                args = {
+                    description = {
+                        type = "description",
+                        fontSize = "medium",
+                        name = GetAboutText,
+                        order = 0,
+                    },
+                },
+            },
+            support = {
+                name = L:G("Support"),
+                type = "group",
+                order = 1,
+                inline = true,
+                args = {
+                    description = {
+                        type = "description",
+                        fontSize = "medium",
+                        name = L:G("If you find any issues with the plugin, please submit an issue on the projects GitHub page."),
+                        order = 0,
+                    },
+                    importer = {
+                        type = "input",
+                        name = L:G("GitHub"),
+                        order = 1,
+                        width = "full",
+                        get = function() return "https://github.com/Chipinators/BetterBags_AdiBagsImporter" end,
+                        set = function(_, value) value = "https://github.com/Chipinators/BetterBags_AdiBagsImporter" end,
+                    },
+                },
+            },
+            otherPlugins = {
+                name = L:G("Check Out My Other BetterBags Plugins"),
+                type = "group",
+                order = 2,
+                inline = true,
+                args = {
+                    importer = {
+                        type = "input",
+                        name = L:G("AdiBags Importer"),
+                        order = 0,
+                        width = "full",
+                        get = function() return "https://github.com/Chipinators/BetterBags_Renamer" end,
+                        set = function(_, value) value = "https://github.com/Chipinators/BetterBags_Renamer" end,
+                    },
+                },
+            },
+        }
     },
 }
 
