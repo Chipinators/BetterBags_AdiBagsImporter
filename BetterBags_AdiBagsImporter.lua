@@ -1,4 +1,4 @@
-local VERSION_INFO = "1.0.8";
+local VERSION_INFO = "1.0.7";
 local VERSION_DATE = 1725368747;
 
 ---@diagnostic disable: missing-fields
