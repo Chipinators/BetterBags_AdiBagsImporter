@@ -153,7 +153,7 @@ end
 
 -- Function to Enable Adi Bags and Reload UI
 function addon:EnableAdiBags()
-    EnableAddOn("AdiBags")
+    C_AddOns.EnableAddOn("AdiBags")
     ReloadUI()
 end
 

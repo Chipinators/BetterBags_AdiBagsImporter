@@ -10,7 +10,4 @@
 ## Dependencies: BetterBags
 ## OptionalDeps: AdiBags
 
-# Locale
-locale\enUs.lua
-
 BetterBags_AdiBagsImporter.lua
